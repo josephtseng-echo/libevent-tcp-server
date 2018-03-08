@@ -1,5 +1,6 @@
 # libevent2 tcp server
 ## linux  
+cd ./src  
 
 gcc main.c -o sdemo -L/usr/local/libevent/lib -levent_core -levent_pthreads
 

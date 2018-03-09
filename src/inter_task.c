@@ -20,18 +20,16 @@ void onInterTaskRead(struct bufferevent *bev, void *arg){
 		//check packet header decode
 		struct ZsqInternalHeader h;
 		evbuffer_copyout(input, &h, sizeof(h));
-		check_condition_void(z_inter_packet_decode(h));
-		//get packet buff connect
-		char packet_buff[ZSQ_INTERPACKET_MAX_LENGTH];
-		uint32 dlen = len > sizeof(packet_buff) ? sizeof(packet_buff) : len;
-		struct ZsqInternalHeader *head = (struct ZsqInternalHeader*)packet_buff;
-		evbuffer_copyout(input, head, dlen);
-		evbuffer_drain(input, dlen);
-
-		unsigned char data[head->bodylen - 4];
-		z_get_packet_body((unsigned char*)&data, head);
-		printf("body1 = %s \n", data);
-
+		bool ret = z_inter_packet_decode(h);
+		if(ret == true){
+			//get packet buff connect
+			char packet_buff[ZSQ_INTERPACKET_MAX_LENGTH];
+			uint32 dlen = len > sizeof(packet_buff) ? sizeof(packet_buff) : len;
+			struct ZsqInternalHeader *head = (struct ZsqInternalHeader*)packet_buff;
+			evbuffer_copyout(input, head, dlen);
+			evbuffer_drain(input, dlen);
+			printf("inter task packet ok..\n");
+		}
 	}else{
 		evbuffer_drain(input, len);
 	}
